@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 
-public class ParametrizedTest {
+public class ParametrizedTests {
     @BeforeEach
     void precondition() {
         Selenide.open("https://www.binance.com/");
@@ -49,5 +49,19 @@ public class ParametrizedTest {
         Selenide.$$(".css-gvz19r").find(text("Security Verification")).shouldBe(visible);
     }
 
-
+    @MethodSource(value = "mixedArgumentsTestDataProvider")
+    @ParameterizedTest(name = "Name {2}")
+    void mixedArgumentsTest(String email, String password) {
+        Selenide.$("#header_login").click();
+        Selenide.$("input[name='email']").setValue(email);
+        Selenide.$("input[name='password']").setValue(password).pressEnter();
+        Selenide.sleep(5000);
+        Selenide.$$(".css-gvz19r").find(text("Security Verification")).shouldBe(visible);;
+    }
+    static Stream<Arguments> mixedArgumentsTestDataProvider() {
+        return Stream.of(
+                Arguments.of("asd@mail.ru", "111222"),
+                Arguments.of("asd@gmail.com", "we-=we-=")
+        );
+    }
 }
